@@ -1,0 +1,10 @@
+to execute:
+bash ex.sh
+
+files used:
+grammar.y
+grammar.l
+sym_tab.h
+
+
+inputs are in inputs folder
