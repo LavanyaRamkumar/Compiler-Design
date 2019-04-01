@@ -62,7 +62,7 @@ void used(int sym,char* var_name,int ln);
  						
 {L}{A}* 				{ECHO; yylval.text=strdup(yytext);
  						return T_IDENTIFIER;}
-({D}*{E}?)				{ECHO; yylval.text=strdup(yytext);
+({D}*{E}?)				{yylval.text=strdup(yytext);
  						return T_I_CONSTANT;}
 {char}					{ECHO; yylval.text=strdup(yytext);
  						return T_C_CONSTANT;}
@@ -117,7 +117,7 @@ void used(int sym,char* var_name,int ln);
  						return ')'; }
 ";"						{ECHO;("%s \t\t';'\n",yytext);
  						return ';';}
-"+"						{ECHO;yylval.text=strdup(yytext);
+"+"						{yylval.text=strdup(yytext);
  						return '+';}
 "*"						{ECHO; yylval.text=strdup(yytext);
  						return '*';}

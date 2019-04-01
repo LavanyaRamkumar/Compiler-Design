@@ -122,7 +122,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 46 "grammar2.y" /* yacc.c:1909  */
+#line 47 "grammar2.y" /* yacc.c:1909  */
 
 	char* text; struct Node* node_ptr;
 

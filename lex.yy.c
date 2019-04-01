@@ -985,7 +985,7 @@ YY_RULE_SETUP
 case 18:
 YY_RULE_SETUP
 #line 65 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+{yylval.text=strdup(yytext);
  						return T_I_CONSTANT;}
 	YY_BREAK
 case 19:
@@ -1155,7 +1155,7 @@ YY_RULE_SETUP
 case 45:
 YY_RULE_SETUP
 #line 120 "grammar1.l"
-{ECHO;yylval.text=strdup(yytext);
+{yylval.text=strdup(yytext);
  						return '+';}
 	YY_BREAK
 case 46:

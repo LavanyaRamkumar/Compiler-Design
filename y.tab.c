@@ -74,7 +74,7 @@ int yylex();
 char *yytext;
 char value[100]={'\0'};
 
-
+int i = 0;
 int yywrap()
 {
 return(1);
@@ -83,18 +83,19 @@ return(1);
 struct Node {
 	char token[100];
 	char* num ;
-	struct Node* c;
-	struct Node* s;
+	struct Node* c1;
+	struct Node* c2;
+	struct Node* c3;
 };
 
 struct Node* root;
 typedef struct Node node;
 
 node* create_leaf (char * token, char* num);
-node* create_node (char* token, node* c, node* s);
+node* create_node (char* token, node* c1, node* c2, node* c3);
 
 
-#line 98 "y.tab.c" /* yacc.c:339  */
+#line 99 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -206,11 +207,11 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 46 "grammar2.y" /* yacc.c:355  */
+#line 47 "grammar2.y" /* yacc.c:355  */
 
 	char* text; struct Node* node_ptr;
 
-#line 214 "y.tab.c" /* yacc.c:355  */
+#line 215 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -227,7 +228,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 231 "y.tab.c" /* yacc.c:358  */
+#line 232 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -528,7 +529,7 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    60,    60,    66,    74,    79
+       0,    61,    61,    69,    78,    84
 };
 #endif
 
@@ -1311,45 +1312,51 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 60 "grammar2.y" /* yacc.c:1646  */
+#line 61 "grammar2.y" /* yacc.c:1646  */
     { (yyval.node_ptr) = create_leaf("num",(yyvsp[0].text));
-		        //printf("%p:",$$);
+			//printf("%p const -1 -1 -1",i++);
+			//printf("%p prim_exp ",$$);
+		        printf("\nprim %p ",(yyval.node_ptr));
 			printf("p->5\n");
 		       }
-#line 1320 "y.tab.c" /* yacc.c:1646  */
+#line 1323 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 66 "grammar2.y" /* yacc.c:1646  */
-    {//$$ = $1;
-				       (yyval.node_ptr) = create_node("p",(yyvsp[0].node_ptr),NULL);
-				       //printf("%p:",$$);
+#line 69 "grammar2.y" /* yacc.c:1646  */
+    { (yyval.node_ptr) = (yyvsp[0].node_ptr);
+				       //$$ = create_node("p",$1,NULL);
+				       printf("unary_exp %p ",(yyval.node_ptr));
+				       //printf("prim_exp %p\n",$1);
 				       printf("u->p\n");
 				       }
-#line 1330 "y.tab.c" /* yacc.c:1646  */
+#line 1334 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 74 "grammar2.y" /* yacc.c:1646  */
-    {(yyval.node_ptr) = create_node("+",(yyvsp[-2].node_ptr),(yyvsp[0].node_ptr));
-						    //printf("root %p:",$$);
-
+#line 78 "grammar2.y" /* yacc.c:1646  */
+    { (yyval.node_ptr) = create_node("+",(yyvsp[-2].node_ptr),(yyvsp[0].node_ptr),NULL);
+						    printf("\n+ %p ",(yyval.node_ptr));
+						    printf("%p ",(yyvsp[-2].node_ptr));
+					            printf("%p",(yyvsp[0].node_ptr));
 						    printf("a->a+u\n");
 						   }
-#line 1340 "y.tab.c" /* yacc.c:1646  */
+#line 1345 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 79 "grammar2.y" /* yacc.c:1646  */
-    { //$$ = $1;
-			     (yyval.node_ptr) = create_node("u",(yyvsp[0].node_ptr),NULL);
-			     //printf("%p:",$$);
-			     printf("a->u\n"); }
-#line 1349 "y.tab.c" /* yacc.c:1646  */
+#line 84 "grammar2.y" /* yacc.c:1646  */
+    { (yyval.node_ptr) = (yyvsp[0].node_ptr);
+			     //$$ = create_node("u",$1,NULL);
+			     printf("add_exp %p ",(yyval.node_ptr));
+			     //printf("unary_exp %p\n",$1);
+			     printf("a->u\n");
+			   }
+#line 1356 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1353 "y.tab.c" /* yacc.c:1646  */
+#line 1360 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1577,43 +1584,47 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 86 "grammar2.y" /* yacc.c:1906  */
+#line 93 "grammar2.y" /* yacc.c:1906  */
  
 
 node* create_leaf (char * token, char* num){
 	//printf("size of %d",sizeof(node));
 	
 	node* temp = (node*)malloc(sizeof(node));
-	node* par = (node*)malloc(sizeof(node));
+	/*node* par = (node*)malloc(sizeof(node));
 	strcpy(par->token,token);
 	par->c = temp;
-	par->s = NULL;
+	par->s = NULL;*/
 	strcpy(temp->token,num);
 	temp->num = num;
-	temp->c = NULL;
-	temp->s = NULL;
-	printf("temp leaf root: %p ",temp);
+	temp->c1 = NULL;
+	temp->c2 = NULL;
+	temp->c3 = NULL;
+	/*printf("temp leaf root: %p ",temp);
 	printf("temp child: %p ",temp->c);
 	printf("temp sib:%p ",temp->s);
 	printf("par leaf root: %p ",par);
 	printf("par child: %p ",par->c);
-	printf("par sib:%p ",par->s);
-	return par;
-
+	printf("par sib:%p ",par->s);*/
+	//return par;
+	return temp;
 }
 
-node* create_node (char* token, node* c, node* s){
+node* create_node (char* token, node* c1, node* c2, node* c3){
 
 	node* temp = (node*)malloc(sizeof(node));
 	strcpy(temp->token,token);
 	temp->num = NULL;
-	temp->c = c;
+	/*temp->c = c;
 	temp->s = NULL;
 	c->s = s;
 	printf("update of %p's sib to %p ",c,c->s);
 	printf("root: %p ",temp);
 	printf("child: %p ",temp->c);
-	printf("sib:%p ",temp->s);
+	printf("sib:%p ",temp->s);*/
+	temp->c1 = c1;
+	temp->c2 = c2;
+	temp->c3 = c3;
 	return temp;
 
 }
