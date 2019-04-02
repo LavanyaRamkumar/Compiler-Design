@@ -73,13 +73,13 @@ int yylex();
 
 char *yytext;
 char value[100]={'\0'};
-
+FILE *fptr;
 int i = 0;
 int yywrap()
 {
 return(1);
 }
-
+ 
 struct Node {
 	char token[100];
 	char* num ;
@@ -468,18 +468,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  5
+#define YYFINAL  8
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   37
+#define YYLAST   38
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  41
+#define YYNTOKENS  46
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  4
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  5
+#define YYNRULES  9
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  8
+#define YYNSTATES  16
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -496,10 +496,10 @@ static const yytype_uint8 yytranslate[] =
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    39,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    37,     2,    38,     2,     2,     2,     2,
+       2,     2,     2,    39,     2,     2,     2,    43,     2,     2,
+       2,     2,    41,    37,     2,    38,     2,    42,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    40,     2,     2,     2,     2,     2,     2,     2,     2,
+      44,    40,    45,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -529,7 +529,7 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    61,    61,    69,    78,    84
+       0,    61,    61,    68,    71,    77,    83,    93,    96,   104
 };
 #endif
 
@@ -545,8 +545,8 @@ static const char *const yytname[] =
   "T_ADD_ASSIGN", "T_SUB_ASSIGN", "T_CHAR", "T_INT", "T_FLOAT", "T_DOUBLE",
   "T_IF", "T_ELSE", "T_WHILE", "T_CONTINUE", "T_BREAK", "T_RETURN",
   "T_MAIN", "T_INCLUDE", "T_DEFINE", "T_PRINT", "T_HEADER", "IFX", "'+'",
-  "'-'", "'!'", "'='", "$accept", "primary_expression", "unary_expression",
-  "additive_expression", YY_NULLPTR
+  "'-'", "'!'", "'='", "'*'", "'/'", "'%'", "'<'", "'>'", "$accept",
+  "primary_expression", "multiplicative_expression", "additive_expression", YY_NULLPTR
 };
 #endif
 
@@ -559,14 +559,14 @@ static const yytype_uint16 yytoknum[] =
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
      285,   286,   287,   288,   289,   290,   291,    43,    45,    33,
-      61
+      61,    42,    47,    37,    60,    62
 };
 # endif
 
-#define YYPACT_NINF -5
+#define YYPACT_NINF -41
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-5)))
+  (!!((Yystate) == (-41)))
 
 #define YYTABLE_NINF -1
 
@@ -577,7 +577,8 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -4,    -5,    -5,    -5,     0,    -5,    -4,    -5
+       4,   -41,   -41,   -40,     0,     4,     4,     4,   -41,     4,
+       4,   -41,   -41,   -41,   -40,   -40
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -585,13 +586,14 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     2,     3,     5,     0,     1,     0,     4
+       0,     2,     3,     7,     0,     0,     0,     0,     1,     0,
+       0,     4,     5,     6,     8,     9
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -5,    -5,    -3,    -5
+     -41,    -1,    -2,   -41
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -605,37 +607,38 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-       5,     1,     0,     7,     0,     0,     0,     0,     0,     0,
+       8,     5,     6,     7,    11,    12,    13,    14,    15,     1,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     6
+       0,     0,     0,     0,     0,     0,     0,     9,    10
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,     5,    -1,     6,    -1,    -1,    -1,    -1,    -1,    -1,
+       0,    41,    42,    43,     5,     6,     7,     9,    10,     5,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    37
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    37,    38
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     5,    42,    43,    44,     0,    37,    43
+       0,     5,    47,    48,    49,    41,    42,    43,     0,    37,
+      38,    47,    47,    47,    48,    48
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    41,    42,    43,    44,    44
+       0,    46,    47,    48,    48,    48,    48,    49,    49,    49
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     1,     3,     1
+       0,     2,     1,     1,     3,     3,     3,     1,     3,     3
 };
 
 
@@ -1314,49 +1317,87 @@ yyreduce:
         case 2:
 #line 61 "grammar2.y" /* yacc.c:1646  */
     { (yyval.node_ptr) = create_leaf("num",(yyvsp[0].text));
-			//printf("%p const -1 -1 -1",i++);
-			//printf("%p prim_exp ",$$);
-		        printf("\nprim %p ",(yyval.node_ptr));
-			printf("p->5\n");
+		        fprintf(fptr,"%p const -1 -1 -1\n",(yyval.node_ptr));
+			printf("%p const -1 -1 -1\n",(yyval.node_ptr));
+			//printf("p->5\n");
 		       }
-#line 1323 "y.tab.c" /* yacc.c:1646  */
+#line 1325 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 69 "grammar2.y" /* yacc.c:1646  */
+#line 68 "grammar2.y" /* yacc.c:1646  */
     { (yyval.node_ptr) = (yyvsp[0].node_ptr);
-				       //$$ = create_node("p",$1,NULL);
-				       printf("unary_exp %p ",(yyval.node_ptr));
-				       //printf("prim_exp %p\n",$1);
-				       printf("u->p\n");
-				       }
-#line 1334 "y.tab.c" /* yacc.c:1646  */
+
+			   }
+#line 1333 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 78 "grammar2.y" /* yacc.c:1646  */
-    { (yyval.node_ptr) = create_node("+",(yyvsp[-2].node_ptr),(yyvsp[0].node_ptr),NULL);
-						    printf("\n+ %p ",(yyval.node_ptr));
+#line 71 "grammar2.y" /* yacc.c:1646  */
+    { (yyval.node_ptr) = create_node("*",(yyvsp[-2].node_ptr),(yyvsp[0].node_ptr),NULL);
+						    printf("+ %p ",(yyval.node_ptr));
 						    printf("%p ",(yyvsp[-2].node_ptr));
 					            printf("%p",(yyvsp[0].node_ptr));
-						    printf("a->a+u\n");
-						   }
-#line 1345 "y.tab.c" /* yacc.c:1646  */
+						    //printf("m->m*p\n");
+						     }
+#line 1344 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 84 "grammar2.y" /* yacc.c:1646  */
+#line 77 "grammar2.y" /* yacc.c:1646  */
+    { (yyval.node_ptr) = create_node("/",(yyvsp[-2].node_ptr),(yyvsp[0].node_ptr),NULL);
+						    printf("+ %p ",(yyval.node_ptr));
+						    printf("%p ",(yyvsp[-2].node_ptr));
+					            printf("%p",(yyvsp[0].node_ptr));
+						    //printf("m->m/p\n");
+						     }
+#line 1355 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 6:
+#line 83 "grammar2.y" /* yacc.c:1646  */
+    { (yyval.node_ptr) = create_node("%",(yyvsp[-2].node_ptr),(yyvsp[0].node_ptr),NULL);
+						    printf("+ %p ",(yyval.node_ptr));
+						    printf("%p ",(yyvsp[-2].node_ptr));
+					            printf("%p",(yyvsp[0].node_ptr));
+						    //printf("m->m mod p\n");
+						     }
+#line 1366 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 7:
+#line 93 "grammar2.y" /* yacc.c:1646  */
     { (yyval.node_ptr) = (yyvsp[0].node_ptr);
-			     //$$ = create_node("u",$1,NULL);
-			     printf("add_exp %p ",(yyval.node_ptr));
-			     //printf("unary_exp %p\n",$1);
-			     printf("a->u\n");
+			    
 			   }
-#line 1356 "y.tab.c" /* yacc.c:1646  */
+#line 1374 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 8:
+#line 96 "grammar2.y" /* yacc.c:1646  */
+    { (yyval.node_ptr) = create_node("+",(yyvsp[-2].node_ptr),(yyvsp[0].node_ptr),NULL);
+						    fprintf(fptr,"%p + %p %p -1",(yyval.node_ptr),(yyvsp[-2].node_ptr),(yyvsp[0].node_ptr));
+						    printf("%p + %p %p -1",(yyval.node_ptr),(yyvsp[-2].node_ptr),(yyvsp[0].node_ptr));
+					            
+						    
+						    //printf("a->a + m\n");
+						     }
+#line 1386 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 9:
+#line 104 "grammar2.y" /* yacc.c:1646  */
+    { (yyval.node_ptr) = create_node("-",(yyvsp[-2].node_ptr),(yyvsp[0].node_ptr),NULL);
+						    printf("+ %p ",(yyval.node_ptr));
+						    printf("%p ",(yyvsp[-2].node_ptr));
+					            printf("%p",(yyvsp[0].node_ptr));
+						    //printf("a->a - m\n");
+						     }
+#line 1397 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1360 "y.tab.c" /* yacc.c:1646  */
+#line 1401 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1584,7 +1625,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 93 "grammar2.y" /* yacc.c:1906  */
+#line 215 "grammar2.y" /* yacc.c:1906  */
  
 
 node* create_leaf (char * token, char* num){
@@ -1640,9 +1681,10 @@ int yyerror()
 						     
 int main()
 {
-	
+	fptr = fopen("sample.txt", "w");
 	if(!yyparse()){
-		printf("\nValid\n");}
+		printf("\nValid\n");
+}
 	
 	return 1;
 }

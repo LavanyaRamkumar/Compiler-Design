@@ -8,13 +8,13 @@ int yylex();
 
 char *yytext;
 char value[100]={'\0'};
-
+FILE *fptr;
 int i = 0;
 int yywrap()
 {
 return(1);
 }
-
+ 
 struct Node {
 	char token[100];
 	char* num ;
@@ -59,151 +59,155 @@ node* create_node (char* token, node* c1, node* c2, node* c3);
 %%
 primary_expression
 	:T_I_CONSTANT { $$ = create_leaf("num",$1);
-			//printf("%p const -1 -1 -1",i++);
-			//printf("%p prim_exp ",$$);
-		        printf("\nprim %p ",$$);
-			printf("p->5\n");
+		        fprintf(fptr,"%p const -1 -1 -1\n",$$);
+			printf("%p const -1 -1 -1\n",$$);
+			//printf("p->5\n");
 		       }
 	;
 multiplicative_expression
 	: primary_expression { $$ = $1;
-			     //$$ = create_node("u",$1,NULL);
-			     printf("mul_exp %p ",$$);
-			     //printf("unary_exp %p\n",$1);
-			     printf("m->u\n");
+
 			   }
 	| multiplicative_expression '*' primary_expression { $$ = create_node("*",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
+						    printf("+ %p ",$$);
 						    printf("%p ",$1);
 					            printf("%p",$3);
-						    printf("m->m*p\n");
+						    //printf("m->m*p\n");
 						     }
 	| multiplicative_expression '/' primary_expression { $$ = create_node("/",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
+						    printf("+ %p ",$$);
 						    printf("%p ",$1);
 					            printf("%p",$3);
-						    printf("m->m/p\n");
+						    //printf("m->m/p\n");
 						     }
 	| multiplicative_expression '%' primary_expression { $$ = create_node("%",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
+						    printf("+ %p ",$$);
 						    printf("%p ",$1);
 					            printf("%p",$3);
-						    printf("m->m mod p\n");
+						    //printf("m->m mod p\n");
 						     }
 	
 	;
 
 additive_expression
 	: multiplicative_expression { $$ = $1;
-			     //$$ = create_node("u",$1,NULL);
-			     printf("add_exp %p ",$$);
-			     //printf("unary_exp %p\n",$1);
-			     printf("a->m\n");
+			    
 			   }
 	| additive_expression '+' multiplicative_expression { $$ = create_node("+",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
-						    printf("%p ",$1);
-					            printf("%p",$3);
-						    printf("a->a + m\n");
+						    fprintf(fptr,"%p + %p %p -1",$$,$1,$3);
+						    printf("%p + %p %p -1",$$,$1,$3);
+					            
+						    
+						    //printf("a->a + m\n");
 						     }
 
 	| additive_expression '-' multiplicative_expression { $$ = create_node("-",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
+						    printf("+ %p ",$$);
 						    printf("%p ",$1);
 					            printf("%p",$3);
-						    printf("a->a - m\n");
+						    //printf("a->a - m\n");
 						     }	
 	;
 
 relational_expression
 	: additive_expression { $$ = $1;
-			     //$$ = create_node("u",$1,NULL);
-			     printf("rel_exp %p ",$$);
-			     //printf("unary_exp %p\n",$1);
-			     printf("r->a\n");
+			   
 			   }
 
 	| relational_expression '<' additive_expression { $$ = create_node("<",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
+						    printf("+ %p ",$$);
 						    printf("%p ",$1);
 					            printf("%p",$3);
-						    printf("r->r < a\n");
+						    //printf("r->r < a\n");
 						     }	
 
 	| relational_expression '>' additive_expression { $$ = create_node(">",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
+						    printf("+ %p ",$$);
 						    printf("%p ",$1);
 					            printf("%p",$3);
-						    printf("r->r > a\n");
+						    //printf("r->r > a\n");
 						     }	
 
 	| relational_expression T_LE_OP additive_expression { $$ = create_node("T_LE_OP",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
+						    printf("+ %p ",$$);
 						    printf("%p ",$1);
 					            printf("%p",$3);
-						    printf("r->r T_LE_OP a\n");
+						    //printf("r->r T_LE_OP a\n");
 						     }	
 
 	| relational_expression T_GE_OP additive_expression { $$ = create_node("T_GE_OP",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
+						    printf("+ %p ",$$);
 						    printf("%p ",$1);
 					            printf("%p",$3);
-						    printf("r->r T_GE_OP a\n");
+						    //printf("r->r T_GE_OP a\n");
 						     }	
 	;
 
 equality_expression
 	: relational_expression { $$ = $1;
-			     //$$ = create_node("u",$1,NULL);
-			     printf("equality_exp %p ",$$);
-			     //printf("unary_exp %p\n",$1);
-			     printf("e->r\n");
+			   
 			   }
 	| equality_expression T_EQ_OP relational_expression { $$ = create_node("==",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
+						    printf("+ %p ",$$);
 						    printf("%p ",$1);
 					            printf("%p",$3);
-						    printf("e->e == r\n");
+						   // printf("e->e == r\n");
 						     }	
 
 	| equality_expression T_NE_OP relational_expression { $$ = create_node("!=",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
+						    printf("+ %p ",$$);
 						    printf("%p ",$1);
 					            printf("%p",$3);
-						    printf("e->e != r\n");
+						   // printf("e->e != r\n");
 						     }	
 	;
 
 logical_and_expression
 	: equality_expression { $$ = $1;
 			     //$$ = create_node("u",$1,NULL);
-			     printf("logical_and_expression %p ",$$);
+			    // printf("logical_and_expression %p ",$$);
 			     //printf("unary_exp %p\n",$1);
-			     printf("la->e\n");
+			    // printf("la->e\n");
 			   }
 
 	| logical_and_expression T_AND_OP equality_expression { $$ = create_node("&&",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
+						    printf("+ %p ",$$);
 						    printf("%p ",$1);
 					            printf("%p",$3);
-						    printf("la->la && e\n");
+						    //printf("la->la && e\n");
 						     }	
 	;
 
 logical_or_expression
 	: logical_and_expression { $$ = $1;
 			     //$$ = create_node("u",$1,NULL);
-			     printf("logical_or_expression %p ",$$);
+			     //printf("logical_or_expression %p ",$$);
 			     //printf("unary_exp %p\n",$1);
-			     printf("lr->la\n");
+			     //printf("lr->la\n");
 			   }
 
 	| logical_or_expression T_OR_OP logical_and_expression { $$ = create_node("||",$1,$3,NULL);
-						    printf("\n+ %p ",$$);
+						    printf("+ %p ",$$);
 						    printf("%p ",$1);
 					            printf("%p",$3);
-						    printf("lr->lr || la\n");
+						   // printf("lr->lr || la\n");
 						     }	
+	;
+
+declaration
+	: type_specifier init_declarator_list ';' {strcpy(type,"");}
+	;
+
+
+init_declarator_list
+	: init_declarator
+	| init_declarator_list ',' init_declarator { $$ = create_node("list",$1,$3,NULL);
+	;
+
+init_declarator
+	: declarator {$$ = create_leaf("num",$1);
+		      printf("id %p ",$$);
+		}
 	;
 
 
@@ -223,6 +227,8 @@ logical_or_expression
 	
 	;
 */
+
+
 
 %% 
 
@@ -279,9 +285,10 @@ int yyerror()
 						     
 int main()
 {
-	
+	fptr = fopen("sample.txt", "w");
 	if(!yyparse()){
-		printf("\nValid\n");}
+		printf("\nValid\n");
+}
 	
 	return 1;
 }
