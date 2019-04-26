@@ -1,6 +1,0 @@
-0xf340c0 const -1 -1 -1
-0xf351a0 const -1 -1 -1
-
-
-0xf35230 + 0xf340c0 0xf351a0 -1
-Valid
