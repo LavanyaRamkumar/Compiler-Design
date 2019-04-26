@@ -375,8 +375,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 60
-#define YY_END_OF_BUFFER 61
+#define YY_NUM_RULES 61
+#define YY_END_OF_BUFFER 62
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -386,7 +386,7 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[152] =
     {   0,
-       18,   18,   61,   60,   58,   59,   48,   53,   60,   52,
+       18,   18,   62,   60,   58,   59,   48,   53,   60,   52,
        60,   60,   42,   43,   46,   45,   55,   47,   60,   51,
        18,   44,   36,   54,   37,   17,   17,   49,   50,   17,
        17,   17,   17,   17,   17,   17,   17,   17,   17,   39,
@@ -586,8 +586,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "grammar1.l"
-#line 11 "grammar1.l"
+#line 1 "grammar.l"
+#line 11 "grammar.l"
 	#include <stdio.h>
 	#include "y.tab.h"
 	#include<stdlib.h>	
@@ -820,7 +820,7 @@ YY_DECL
 		}
 
 	{
-#line 26 "grammar1.l"
+#line 26 "grammar.l"
 
 
 #line 827 "lex.yy.c"
@@ -882,226 +882,226 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 28 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 28 "grammar.l"
+{ECHO;strcpy(type,"char");
  						return(T_CHAR); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 30 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);("%s \t\tT_INT\n",yytext);
+#line 30 "grammar.l"
+{ECHO;strcpy(type,"int");
  						return(T_INT); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 32 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);("%s \t\tT_FLOAT\n",yytext);
+#line 32 "grammar.l"
+{ECHO;strcpy(type,"float");
  						return(T_FLOAT); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 34 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);("%s \t\tT_DOUBLE\n",yytext);
+#line 34 "grammar.l"
+{ECHO;strcpy(type,"double");
  						return(T_DOUBLE); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 37 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 37 "grammar.l"
+{ECHO;
  						return(T_IF); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 39 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 39 "grammar.l"
+{ECHO;
  						return(T_ELSE); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 41 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 41 "grammar.l"
+{ECHO;
  						return(T_WHILE); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 43 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 43 "grammar.l"
+{ECHO;
  						return(T_BREAK); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 45 "grammar1.l"
-{ECHO;("%s \t\tT_CONTINUE\n",yytext);
+#line 45 "grammar.l"
+{ECHO;
  						return(T_CONTINUE); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 47 "grammar1.l"
-{ECHO;("%s \t\tT_RETURN\n",yytext);
+#line 47 "grammar.l"
+{ECHO;
  						return(T_RETURN); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 50 "grammar1.l"
-{ECHO;("%s \t\tT_MAIN\n",yytext);
+#line 50 "grammar.l"
+{ECHO;
  						return T_MAIN;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 52 "grammar1.l"
-{ECHO;("%s \t\tT_INCLUDE\n",yytext);
+#line 52 "grammar.l"
+{ECHO;
  						return(T_INCLUDE); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 54 "grammar1.l"
-{ECHO;("%s \t\tT_DEFINE\n",yytext);
+#line 54 "grammar.l"
+{ECHO;
  						return(T_DEFINE); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 56 "grammar1.l"
-{ECHO;("%s \t\tT_PRINT\n",yytext);
+#line 56 "grammar.l"
+{ECHO;
  						return(T_PRINT); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 58 "grammar1.l"
-{ECHO;("%s \t\tT_HEADER\n",yytext);
+#line 58 "grammar.l"
+{ECHO;
  						return(T_HEADER); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 60 "grammar1.l"
-{ECHO;("%s \t\tT_HEADER\n",yytext);
+#line 60 "grammar.l"
+{ECHO;
  						return(T_HEADER); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 63 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 63 "grammar.l"
+{ECHO;strcpy(var,yytext);if(strcmp(type,"")==0){used(csym,var,ln);}
  						return T_IDENTIFIER;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 65 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 65 "grammar.l"
+{ECHO;yylval.nVal.fVal=atoi(yytext);
  						return T_I_CONSTANT;}
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 67 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 67 "grammar.l"
+{ECHO;yylval.nVal.fVal=yytext[1];
  						return T_C_CONSTANT;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 69 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 69 "grammar.l"
+{ECHO;yylval.nVal.fVal=(float)atof(yytext);
  						return T_F_CONSTANT;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 71 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 71 "grammar.l"
+{ECHO;yylval.nVal.fVal=(float)atof(yytext);
  						return T_F_CONSTANT;}
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 73 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 73 "grammar.l"
+{ECHO;strcpy(yylval.sVal,yytext);
  						return T_STRING_LITERAL;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 75 "grammar1.l"
-{ECHO;("%s \t\tT_ADD_ASSIGN\n",yytext);
+#line 75 "grammar.l"
+{ECHO;
  						return T_ADD_ASSIGN; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 77 "grammar1.l"
-{ECHO;("%s \t\tT_SUB_ASSIGN\n",yytext);
+#line 77 "grammar.l"
+{ECHO;
  						return T_SUB_ASSIGN; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 79 "grammar1.l"
-{ECHO;("%s \t\tT_MUL_ASSIGN\n",yytext);
+#line 79 "grammar.l"
+{ECHO;
  						return T_MUL_ASSIGN; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 81 "grammar1.l"
-{ECHO;("%s \t\t T_DIV_ASSIGN\n",yytext);
+#line 81 "grammar.l"
+{ECHO;
  						return T_DIV_ASSIGN; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 83 "grammar1.l"
-{ECHO;("%s \t\tT_MOD_ASSIGN\n",yytext);
+#line 83 "grammar.l"
+{ECHO;
  						return T_MOD_ASSIGN; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 85 "grammar1.l"
-{ECHO;("%s \t\tT_INC_OP\n",yytext);
+#line 85 "grammar.l"
+{ECHO;
  						return T_INC_OP; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 87 "grammar1.l"
-{ECHO;("%s \t\tT_DEC_OP\n",yytext);
+#line 87 "grammar.l"
+{ECHO;
  						return T_DEC_OP; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 89 "grammar1.l"
-{ECHO;("%s \t\tT_AND_OP\n",yytext);
+#line 89 "grammar.l"
+{ECHO;
  						return T_AND_OP; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 91 "grammar1.l"
-{ECHO;("%s \t\tT_OR_OP\n",yytext);
+#line 91 "grammar.l"
+{ECHO;
  						return T_OR_OP; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 93 "grammar1.l"
-{ECHO;("%s \t\tT_LE_OP\n",yytext);
+#line 93 "grammar.l"
+{ECHO;
  						return T_LE_OP; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 95 "grammar1.l"
-{ECHO;("%s \t\tT_GE_OP\n",yytext);
+#line 95 "grammar.l"
+{ECHO;
  						return T_GE_OP; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 97 "grammar1.l"
-{ECHO;("%s \t\tT_EQ_OP\n",yytext);
+#line 97 "grammar.l"
+{ECHO;
  						return T_EQ_OP; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 99 "grammar1.l"
-{ECHO;("%s \t\tT_NE_OP\n",yytext);
+#line 99 "grammar.l"
+{ECHO;
  						return T_NE_OP; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 102 "grammar1.l"
-{ECHO;("%s \t\t'<'\n",yytext);
+#line 102 "grammar.l"
+{ECHO;
  						return '<'; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 104 "grammar1.l"
-{ECHO;("%s \t\t'>'\n",yytext);
+#line 104 "grammar.l"
+{ECHO;
  						return '>'; }
 	YY_BREAK
 case 38:
@@ -1109,14 +1109,14 @@ case 38:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 106 "grammar1.l"
-{ECHO;("here");("%s \t\t'{'\n",yytext);
+#line 106 "grammar.l"
+{ECHO;
  						return '{'; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 108 "grammar1.l"
-{ECHO;
+#line 108 "grammar.l"
+{ECHO;csym=create_symboltable(csym);max=csym;comp_cnt++;
  						return '{'; }
 	YY_BREAK
 case 40:
@@ -1124,127 +1124,132 @@ case 40:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 110 "grammar1.l"
-{ECHO;("%s \t\t'}'\n",yytext);
+#line 110 "grammar.l"
+{ECHO;
  						return '}'; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 112 "grammar1.l"
-{ ECHO;
+#line 112 "grammar.l"
+{ECHO;csym= close_symtab(csym);comp_cnt--;
  						return '}'; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 114 "grammar1.l"
-{ECHO;("%s \t\t'('\n",yytext);
+#line 114 "grammar.l"
+{ECHO;
  						return '('; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 116 "grammar1.l"
-{ECHO;("%s \t\t')'\n",yytext);
+#line 116 "grammar.l"
+{ECHO;
  						return ')'; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 118 "grammar1.l"
-{ECHO;("%s \t\t';'\n",yytext);
+#line 118 "grammar.l"
+{ECHO;
  						return ';';}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 120 "grammar1.l"
-{ECHO;yylval.text=strdup(yytext);
+#line 120 "grammar.l"
+{ECHO;yylval.cVal='+';
  						return '+';}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 122 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 122 "grammar.l"
+{ECHO;yylval.cVal='*';
  						return '*';}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 124 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 124 "grammar.l"
+{ECHO;yylval.cVal='-';
  						return '-';}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 126 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 126 "grammar.l"
+{ECHO;yylval.cVal='!';
  						return '!';}
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 128 "grammar1.l"
-{ECHO;("%s \t\t'['\n",yytext);
+#line 128 "grammar.l"
+{ECHO;
  						return '[';}
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 130 "grammar1.l"
-{ECHO;("%s \t\t']'\n",yytext);
+#line 130 "grammar.l"
+{ECHO;
  						return ']';}
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 132 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 132 "grammar.l"
+{ECHO;yylval.cVal='/';
  						return '/';}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 134 "grammar1.l"
-{ECHO; yylval.text=strdup(yytext);
+#line 134 "grammar.l"
+{ECHO;yylval.cVal='%';
  						return '%';}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 136 "grammar1.l"
-{ECHO;("%s \t\t'\"'\n",yytext);
+#line 136 "grammar.l"
+{ECHO;
  						return '"'; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 138 "grammar1.l"
-{ECHO;("%s \t\t'='\n",yytext);
+#line 138 "grammar.l"
+{ECHO;
  						return '=';}
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 140 "grammar1.l"
-{ECHO;("%s \t\t','\n",yytext);
+#line 140 "grammar.l"
+{ECHO;
  						return ',';}
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 142 "grammar1.l"
+#line 142 "grammar.l"
 {multi_comment();}
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 143 "grammar1.l"
+#line 143 "grammar.l"
 {}
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 144 "grammar1.l"
+#line 144 "grammar.l"
 {ECHO;}
 	YY_BREAK
 case 59:
 /* rule 59 can match eol */
 YY_RULE_SETUP
-#line 145 "grammar1.l"
-{ECHO;/*printf("%d",ln);*/}
+#line 145 "grammar.l"
+{ECHO;ln++;}
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 147 "grammar1.l"
+#line 146 "grammar.l"
+{yyerror("Incorrect Syntax");}
+	YY_BREAK
+case 61:
+YY_RULE_SETUP
+#line 147 "grammar.l"
 ECHO;
 	YY_BREAK
-#line 1248 "lex.yy.c"
+#line 1253 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2245,7 +2250,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 147 "grammar1.l"
+#line 147 "grammar.l"
 
 
 void multi_comment(void)
@@ -2265,5 +2270,8 @@ void multi_comment(void)
                 break;
         }
 }
-
+int yywrap()
+{
+	return 1;
+}
 

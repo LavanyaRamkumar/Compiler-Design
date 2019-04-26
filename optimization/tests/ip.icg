@@ -1,0 +1,8 @@
+a = 10
+b = 9
+t0 = a + b
+t1 = t0
+e = t1 + 4
+f = e + 7
+t1 = 1 + f
+print t1

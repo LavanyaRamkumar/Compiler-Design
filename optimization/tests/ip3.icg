@@ -1,0 +1,13 @@
+a = 10
+b = a
+c = b
+d = c - 10
+t0 = b + 10
+a = c
+b = 11
+int f
+t0 = c * 9
+t1 = f * 20
+print b
+print t0
+

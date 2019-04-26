@@ -1,0 +1,7 @@
+ST	parent	id	name	type	ln no.	used at                                                         val
+
+1	0	1	a	int	4	[                                                            ]	10 
+1	0	2	b	int	5	[                                                            ]	10 
+1	0	3	c	int	6	[                                                            ]	20 
+1	0	4	d	int	7	[                                                            ]	210 
+

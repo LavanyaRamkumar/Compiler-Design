@@ -1,0 +1,13 @@
+main:
+int a
+a = 10
+int b
+b = 10
+t1 = a + b
+int c
+c = t1
+t2 = c * b
+t3 = a + t2
+int d
+d = t3
+next :

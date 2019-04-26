@@ -39,6 +39,17 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 32 "grammar.y" /* yacc.c:1909  */
+
+typedef struct Num
+{
+	float fVal;
+	int idVal;
+	int type;
+}NUM;
+
+#line 53 "y.tab.h" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -122,11 +133,13 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 45 "gram.y" /* yacc.c:1909  */
+#line 39 "grammar.y" /* yacc.c:1909  */
 
-	char* text; struct Node* node_ptr;
+	NUM nVal;
+	char sVal[64];
+	char cVal;
 
-#line 130 "y.tab.h" /* yacc.c:1909  */
+#line 143 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

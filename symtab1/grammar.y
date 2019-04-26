@@ -3,7 +3,10 @@
 #include<string.h>
 #include<stdlib.h>
 #include "sym_tab.h"
-int yyerror();  
+#include<unistd.h>
+#include <sys/types.h> 
+int yyerror(char* err);  
+extern FILE *yyout;
 int yylex();
 int comp_cnt=0;
 int csym=0;
@@ -12,14 +15,6 @@ int max=0;
 char type[10];
 char var[64];
 int x=0,y=0,t=0,idc=0;
-typedef struct Node {
-	char token[100];
-	float num ;
-	struct node* l;
-	struct node* r;
-}node;
-node* create_leaf (char * token, float * ptr, float num);
-node* create_node (char* token, node* l, node* r);
 
 %}
 
@@ -35,26 +30,17 @@ node* create_node (char* token, node* l, node* r);
 %nonassoc IFX
 %nonassoc T_ELSE
 %code requires{
-
 typedef struct Num
 {
 	float fVal;
 	int idVal;
 	int type;
-	node* node_ptr;
-
-}NUM;
-
-
-}
+}NUM;}
 %union 	{
 	NUM nVal;
 	char sVal[64];
 	char cVal;
 }
-
-
-
 %type <nVal> T_I_CONSTANT
 %type <nVal> T_F_CONSTANT
 %type <nVal> T_C_CONSTANT
@@ -66,70 +52,40 @@ typedef struct Num
 primary_expression
 	: T_IDENTIFIER {
 					if(($$.idVal=find_variable(csym,var,0,0,0,&($$.fVal)))==-1){
-						yyerror();
+						yyerror("Wrong use of variable or undeclared");
 					}
 					$$.type=check_typ(csym,var);
-					$$.idVal=find_variable(csym,var,0,0,0,&($$.fVal));
-
-					$$.node_ptr = create_leaf("id",$$.idVal,-1);
-					printf("identifier: %p",$$.node_ptr);
 					}
-	| T_I_CONSTANT {$$.fVal=$1.fVal;$$.type=1;
-			$$.node_ptr = create_leaf("num",NULL,$1.fVal);
-			printf("constant: %p",$$.node_ptr);
-			}
-	| T_C_CONSTANT {$$.fVal=$1.fVal;$$.type=3;
-			$$.node_ptr = create_leaf("num",NULL,$1.fVal);
-			}
-	| T_F_CONSTANT {$$.fVal=$1.fVal;$$.type=2;
-			$$.node_ptr = create_leaf("num",NULL,$1.fVal);
-			}
-	| '(' expression ')' {$$.fVal=$2.fVal;$$.type=$2.type;
-			      $$.node_ptr = $2.node_ptr;
-			      }
-	| T_IDENTIFIER '[' T_I_CONSTANT ']' { if(($$.idVal=find_variable(csym,var,1,(int)$3.fVal,0,&($$.fVal)))==-1){
-						yyerror();
-						}
-						$$.type=check_typ(csym,var);
-					$$.idVal=find_variable(csym,var,0,0,0,&($$.fVal));
-
-					$$.node_ptr = create_leaf("id",$$.idVal,-1);
+	| T_I_CONSTANT {$$.fVal=$1.fVal;$$.type=1;}
+	| T_C_CONSTANT {$$.fVal=$1.fVal;$$.type=3;}
+	| T_F_CONSTANT {$$.fVal=$1.fVal;$$.type=2;}//{assign(csym,var,yylval.sVal);}
+	| '(' expression ')' {$$.fVal=$2.fVal;$$.type=$2.type;}
+	| T_IDENTIFIER '[' T_I_CONSTANT ']' {if(($$.idVal=find_variable(csym,var,1,(int)$3.fVal,0,&($$.fVal)))==-1){
+						yyerror("Wrong use of variable or undeclared");
+					}
+					$$.type=check_typ(csym,var);
 					}
 	| T_IDENTIFIER '[' T_I_CONSTANT ']''[' T_I_CONSTANT ']' {if(($$.idVal=find_variable(csym,var,2,(int)$3.fVal,(int)$6.fVal,&($$.fVal)))==-1){
-						yyerror();
+						yyerror("Wrong use of variable or undeclared");
 					}
 					//printf("find: %f",$$.fVal);
 					$$.type=check_typ(csym,var);
-					$$.idVal=find_variable(csym,var,0,0,0,&($$.fVal));
-	
-					$$.node_ptr = create_leaf("id",$$.idVal,-1);
-					
 					}
 	;
 	
 var_expression
-	: T_IDENTIFIER {if(($$.idVal=find_variable(csym,var,0,0,0,&($$.fVal)))==-1){yyerror();}$$.type=check_typ(csym,var);
-			$$.idVal=find_variable(csym,var,0,0,0,&($$.fVal));
-			$$.node_ptr = create_leaf("id",$$.idVal,-1);
-			}
-
+	: T_IDENTIFIER {if(($$.idVal=find_variable(csym,var,0,0,0,&($$.fVal)))==-1){yyerror("Wrong use of variable or undeclared");}$$.type=check_typ(csym,var);}
 	| T_IDENTIFIER '[' T_I_CONSTANT ']' {
 		if(($$.idVal=find_variable(csym,var,1,(int)$3.fVal,0,&($$.fVal)))==-1){
-						yyerror();
+						yyerror("Wrong use of variable or undeclared");
 					}
-		$$.type=check_typ(csym,var);
-		$$.idVal=find_variable(csym,var,0,0,0,&($$.fVal));
-
-		$$.node_ptr = create_leaf("id",$$.idVal,-1);
+					$$.type=check_typ(csym,var);
 	}
 	| T_IDENTIFIER '[' T_I_CONSTANT ']''[' T_I_CONSTANT ']'	{
 		if(($$.idVal=find_variable(csym,var,2,(int)$3.fVal,(int)$6.fVal,&($$.fVal)))==-1){
-						yyerror();
+						yyerror("Wrong use of variable or undeclared");
 					}
-		$$.type=check_typ(csym,var);
-		$$.idVal=find_variable(csym,var,0,0,0,&($$.fVal));
-
-		$$.node_ptr = create_leaf("id",$$.idVal,-1);
+					$$.type=check_typ(csym,var);
 	}
 	;
 	
@@ -153,67 +109,49 @@ unary_operator
 	;
 
 multiplicative_expression
-	: unary_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;$$.type=$1.type;
-			    $$.node_ptr = $1.node_ptr;
-			    }
-	| multiplicative_expression '*' unary_expression {$$.fVal=$1.fVal*$3.fVal;$$.type=($1.type==2||$3.type==2)?2:1;
-							  $$.node_ptr = create_node("*", $1.node_ptr, $3.node_ptr);}
-	| multiplicative_expression '/' unary_expression {if($3.fVal==0){yyerror();}$$.fVal=$1.fVal/$3.fVal;$$.type=2;
-							  $$.node_ptr = create_node("/", $1.node_ptr, $3.node_ptr);}
-	| multiplicative_expression '%' unary_expression {if($1.type==2||$3.type==2||$3.fVal==0){yyerror();}$$.fVal=(int)$1.fVal%(int)$3.fVal;$$.type=1;
-							  $$.node_ptr = create_node("%", $1.node_ptr, $3.node_ptr);}
+	: unary_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;$$.type=$1.type;}
+	| multiplicative_expression '*' unary_expression {$$.fVal=$1.fVal*$3.fVal;$$.type=($1.type==2||$3.type==2)?2:1;}
+	| multiplicative_expression '/' unary_expression {if($3.fVal==0){yyerror("Division By Zero");}$$.fVal=$1.fVal/$3.fVal;$$.type=2;}
+	| multiplicative_expression '%' unary_expression {if($1.type==2||$3.type==2||$3.fVal==0){yyerror("Mod Operation not possible on this");}$$.fVal=(int)$1.fVal%(int)$3.fVal;$$.type=1;}
 	;
 
 additive_expression
-	: multiplicative_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;
-				     $$.node_ptr = $1.node_ptr;}
-	| additive_expression '+' multiplicative_expression {$$.fVal=$1.fVal+$3.fVal;
-							     $$.node_ptr = create_node("+", $1.node_ptr, $3.node_ptr);}
-	| additive_expression '-' multiplicative_expression {$$.fVal=$1.fVal-$3.fVal;
-							     $$.node_ptr = create_node("-", $1.node_ptr, $3.node_ptr);}
+	: multiplicative_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;}
+	| additive_expression '+' multiplicative_expression {$$.fVal=$1.fVal+$3.fVal;}
+	| additive_expression '-' multiplicative_expression {$$.fVal=$1.fVal-$3.fVal;}
 	;
 
 relational_expression
-	: additive_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;
-				$$.node_ptr = $1.node_ptr;}
-	| relational_expression '<' additive_expression {$$.fVal=($1.fVal<$3.fVal);$$.idVal=$3.idVal;
-							 $$.node_ptr = create_node("<", $1.node_ptr, $3.node_ptr);}
-	| relational_expression '>' additive_expression {$$.fVal=($1.fVal>$3.fVal);$$.idVal=$3.idVal;
-							 $$.node_ptr = create_node(">", $1.node_ptr, $3.node_ptr);}
-	| relational_expression T_LE_OP additive_expression {$$.fVal=($1.fVal<=$3.fVal);$$.idVal=$3.idVal;
-							     $$.node_ptr = create_node("LE", $1.node_ptr, $3.node_ptr);}
-	| relational_expression T_GE_OP additive_expression {$$.fVal=($1.fVal>=$3.fVal);$$.idVal=$3.idVal;
-							     $$.node_ptr = create_node("GE", $1.node_ptr, $3.node_ptr);}
+	: additive_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;}
+	| relational_expression '<' additive_expression {$$.fVal=($1.fVal<$3.fVal);$$.idVal=$3.idVal;}
+	| relational_expression '>' additive_expression {$$.fVal=($1.fVal>$3.fVal);$$.idVal=$3.idVal;}
+	| relational_expression T_LE_OP additive_expression {$$.fVal=($1.fVal<=$3.fVal);$$.idVal=$3.idVal;}
+	| relational_expression T_GE_OP additive_expression {$$.fVal=($1.fVal>=$3.fVal);$$.idVal=$3.idVal;}
 	;
 
 equality_expression
-	: relational_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;
-				 $$.node_ptr = $1.node_ptr;}
-	| equality_expression T_EQ_OP relational_expression {$$.fVal=($1.fVal==$3.fVal);$$.idVal=$3.idVal;
-							     $$.node_ptr = create_node("==", $1.node_ptr, $3.node_ptr);}
-	| equality_expression T_NE_OP relational_expression {$$.fVal=($1.fVal!=$3.fVal);$$.idVal=$3.idVal;
-							     $$.node_ptr = create_node("!=", $1.node_ptr, $3.node_ptr);}
+	: relational_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;}
+	| equality_expression T_EQ_OP relational_expression {$$.fVal=($1.fVal==$3.fVal);$$.idVal=$3.idVal;}
+	| equality_expression T_NE_OP relational_expression {$$.fVal=($1.fVal!=$3.fVal);$$.idVal=$3.idVal;}
 	;
 
 logical_and_expression
-	: equality_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;
-			       $$.node_ptr = $1.node_ptr;}
-	| logical_and_expression T_AND_OP equality_expression {$$.fVal=($1.fVal && $3.fVal);$$.idVal=$3.idVal;
-							       $$.node_ptr = create_node("&&", $1.node_ptr, $3.node_ptr);}
+	: equality_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;}
+	| logical_and_expression T_AND_OP equality_expression {$$.fVal=($1.fVal && $3.fVal);$$.idVal=$3.idVal;}
 	;
 
 logical_or_expression
 	: logical_and_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;}
-	| logical_or_expression T_OR_OP logical_and_expression {{$$.fVal=($1.fVal || $3.fVal);$$.idVal=$3.idVal;}
-								$$.node_ptr = create_node("||", $1.node_ptr, $3.node_ptr);}
+	| logical_or_expression T_OR_OP logical_and_expression {{$$.fVal=($1.fVal || $3.fVal);$$.idVal=$3.idVal;}}
 	;
 
 assignment_expression
 	//: logical_or_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;}
 	: var_expression assignment_operator logical_or_expression 
 		{
-	
-	}	
+		//STOPPED HERE
+		if(check_typ_id(csym,$1.idVal)==-1){yyerror("Wrong use of variable or undeclared");}
+		}
 	;
 
 assignment_operator
@@ -246,18 +184,18 @@ init_declarator
 	| declarator '=' initializer {
 		int ty=check_typ_id(csym,$1.idVal);
 		//printf("val%d",ty);
-		if(assign_id(csym,$1.idVal,$3.fVal,1,ty,0,0)==-1){yyerror();}
-		if(check_dim(csym,$1.idVal)!=0){yyerror();}
+		if(assign_id(csym,$1.idVal,$3.fVal,1,ty,0,0)==-1){yyerror("Assignment Not Possible");}
+		if(check_dim(csym,$1.idVal)!=0){yyerror("Dimensional Error");}
 	}
 	| declarator '='  T_STRING_LITERAL 
 		{	
-			if(assign_string(csym,$1.idVal,$3,0)!=1){yyerror();}
+			if(assign_string(csym,$1.idVal,$3,0)!=1){yyerror("Type mismatch");}
 		}
 	| declarator '=' '{' list_of_strings '}'
 	
-	| declarator '='  '{' initializer_list '}' {if(check_dim(csym,$1.idVal)!=1){yyerror();}}
+	| declarator '='  '{' initializer_list '}' {if(check_dim(csym,$1.idVal)!=1){yyerror("Dimensional Error 1D");}}
 		
-	| declarator '=' '{' list_of_lists '}' {if(check_dim(csym,$1.idVal)!=2){yyerror();}}
+	| declarator '=' '{' list_of_lists '}' {if(check_dim(csym,$1.idVal)!=2){yyerror("Dimensional Error 2D");}}
 	;
 	
 initializer
@@ -265,18 +203,18 @@ initializer
 	;
 
 initializer_list
-	: initializer { }
-	| initializer_list ',' initializer { }
+	: initializer {if(assign_id(csym,idc,$1.fVal,1,t,x,y++)==-1){yyerror("Wrong Assignment");}}
+	| initializer_list ',' initializer {if(assign_id(csym,idc,$3.fVal,1,t,x,y++)==-1){yyerror("Wrong Assignment");}}
 	;
 
 list_of_strings
-	: T_STRING_LITERAL { }
-	| list_of_strings ',' T_STRING_LITERAL { }
+	: T_STRING_LITERAL {if(assign_string(csym,idc,$1,x)!=2){yyerror("Error in String Assignment");}x++;}
+	| list_of_strings ',' T_STRING_LITERAL {if(assign_string(csym,idc,$3,x)!=2){yyerror("Error in String Assignment");}x++;}
 	;	
 
 list_of_lists
-	: '{' initializer_list '}' { }
-	| list_of_lists ',' '{' initializer_list '}' { }
+	: '{' initializer_list '}' {x++;y=0;}
+	| list_of_lists ',' '{' initializer_list '}' {x++;y=0;}
 	;
 
 type_specifier
@@ -289,18 +227,18 @@ type_specifier
 declarator
 	: T_IDENTIFIER {
 					if(($$.idVal=add_to_symtab(csym,var,type,ln,0,0,0))==-1){
-						yyerror();}
+						yyerror("Either keyword or variable already present");}
 					}
 	| T_IDENTIFIER '[' T_I_CONSTANT ']' {
 					if(($$.idVal=add_to_symtab(csym,var,type,ln,1,(int)$3.fVal,0))==-1){
-						yyerror();}	
+						yyerror("Either keyword or variable already present");}	
 						idc=$$.idVal;
 						t=check_typ(csym,var);
 						x=0;y=0;
 					}
 	| T_IDENTIFIER '[' T_I_CONSTANT ']' '[' T_I_CONSTANT ']'{
 					if(($$.idVal=add_to_symtab(csym,var,type,ln,2,(int)$3.fVal,(int)$6.fVal))==-1){
-						yyerror();}
+						yyerror("Either keyword or variable already present");}
 						idc=$$.idVal;
 						t=check_typ(csym,var);
 						x=0;y=0;
@@ -393,12 +331,12 @@ external_declaration
 	| external_declaration T_INCLUDE T_HEADER
 	| T_DEFINE T_IDENTIFIER {
 					if(add_to_symtab(csym,var,type,ln,0,0,0)==-1){
-						yyerror();}
+						yyerror("Either keyword or variable already present");}
 					strcpy(type,"");
 					} primary_expression
 	| external_declaration T_DEFINE T_IDENTIFIER {
 					if(add_to_symtab(csym,var,type,ln,0,0,0)==-1){
-						yyerror();}
+						yyerror("Either keyword or variable already present");}
 					strcpy(type,"");
 					} primary_expression			
 	| external_declaration declaration
@@ -410,47 +348,29 @@ function_definition
 
 %%
 
-int yyerror()
+int yyerror(char * err)
 {
-	
-	//int c;
-
-    //while ((c = input())!=';' ||(c = input())!=-1 );
-	printf("\nNot Valid %d\n",ln);
+	printf("\n\n\nNot Valid at line number %d\nError Information : %s\n\n",ln,err);
+	FILE *fptr;
+	fptr = fopen("../valid.txt", "w");
+	fprintf(fptr,"%s","0");
+	fclose(fptr);
 	exit(0);
 
 	return 1;
 }
-
 int main()
 {
 	init_symtab();
-	printf("size of %d",sizeof(node));
-	//printf("1");
+	yyout=fopen("../IO/op1.c","w");
 	if(!yyparse()){
-		printf("\nValid\n");}
+		//printf("\nValid\n\n");
+		FILE *fptr;
+		fptr = fopen("../valid.txt", "w");
+		fprintf(fptr,"%s","1");
+		fclose(fptr);
+		exit_sym();
+}
 	display_symtab(max+1);
 	return 1;
-}
-node* create_leaf (char * token, float * ptr, float num){
-	printf("size of %d",sizeof(node));
-	node* temp = (node*)malloc(sizeof(node));
-	temp.token = token;
-	temp.num = num;
-	temp.ptr = ptr;
-	temp.l = NULL;
-	temp.r = NULL;
-	return temp;
-
-}
-
-node* create_node (char* token, node* l, node* r){
-	node* temp = (node*)malloc(sizeof(node));
-	temp.token = token;
-	temp.num = NULL;
-	temp.ptr = NULL;
-	temp.l = l;
-	temp.r = r;
-	return temp;
-
 }

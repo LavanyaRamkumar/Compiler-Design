@@ -38,11 +38,10 @@ node* create_node (char* token, node* c1, node* c2, node* c3);
 %token T_CHAR T_INT T_FLOAT T_DOUBLE
 %token T_IF T_ELSE T_WHILE T_CONTINUE T_BREAK T_RETURN
 %token T_MAIN T_INCLUDE T_DEFINE T_PRINT T_HEADER
-%start additive_expression
+%start program
 
 %nonassoc IFX
 %nonassoc T_ELSE
-
 
 %union 	{
 	char* text; struct Node* node_ptr;
@@ -52,20 +51,36 @@ node* create_node (char* token, node* c1, node* c2, node* c3);
 %type <text> T_I_CONSTANT
 %type <text> T_F_CONSTANT
 %type <text> T_C_CONSTANT
-%type <node_ptr> additive_expression multiplicative_expression unary_expression postfix_expression primary_expression expression relational_expression equality_expression logical_and_expression logical_or_expression assignment_expression initializer var_expression declarator init_declarator initializer_list 
+%type <node_ptr> additive_expression multiplicative_expression unary_expression postfix_expression primary_expression expression relational_expression equality_expression logical_and_expression logical_or_expression assignment_expression initializer var_expression declarator init_declarator initializer_list declaration  init_declarator_list expression
 %type <text> unary_operator '+' '-' '!' assignment_operator '='
-%type <text> T_STRING_LITERAL
+%type <text> T_STRING_LITERAL type_specifier
 
 %%
 primary_expression
 	:T_I_CONSTANT { $$ = create_leaf("num",$1);
-		        fprintf(fptr,"%p const -1 -1 -1\n",$$);
-			printf("%p const -1 -1 -1\n",$$);
-			//printf("p->5\n");
+		        fprintf(fptr,"%p const -1 -1 -1\n",$$,$1);
+			printf("const");
+
 		       }
+
 	;
+
+var_expression
+	: T_IDENTIFIER { $$ = create_leaf("id",$1);
+		        fprintf(fptr,"%p %s -1 -1 -1\n",$$,$1);
+			}
+
+	| T_IDENTIFIER '[' T_I_CONSTANT ']' {
+		
+					     }
+
+	| T_IDENTIFIER '[' T_I_CONSTANT ']''[' T_I_CONSTANT ']'	{
+								  }
+	;
+	
 multiplicative_expression
 	: primary_expression { $$ = $1;
+				printf("mul");
 
 			   }
 	| multiplicative_expression '*' primary_expression { $$ = create_node("*",$1,$3,NULL);
@@ -94,7 +109,7 @@ additive_expression
 			    
 			   }
 	| additive_expression '+' multiplicative_expression { $$ = create_node("+",$1,$3,NULL);
-						    fprintf(fptr,"%p + %p %p -1",$$,$1,$3);
+						    fprintf(fptr,"%p + %p %p -1\n",$$,$1,$3);
 						    printf("%p + %p %p -1",$$,$1,$3);
 					            
 						    
@@ -102,9 +117,9 @@ additive_expression
 						     }
 
 	| additive_expression '-' multiplicative_expression { $$ = create_node("-",$1,$3,NULL);
-						    printf("+ %p ",$$);
-						    printf("%p ",$1);
-					            printf("%p",$3);
+						    fprintf(fptr,"%p - %p %p -1\n",$$,$1,$3);
+						    printf("%p - %p %p -1",$$,$1,$3);
+					            ;
 						    //printf("a->a - m\n");
 						     }	
 	;
@@ -115,9 +130,9 @@ relational_expression
 			   }
 
 	| relational_expression '<' additive_expression { $$ = create_node("<",$1,$3,NULL);
-						    printf("+ %p ",$$);
-						    printf("%p ",$1);
-					            printf("%p",$3);
+						    fprintf(fptr,"%p < %p %p -1",$$,$1,$3);
+						    printf("%p < %p %p -1",$$,$1,$3);
+					            
 						    //printf("r->r < a\n");
 						     }	
 
@@ -194,21 +209,196 @@ logical_or_expression
 						     }	
 	;
 
+assignment_expression
+	//: logical_or_expression {$$.fVal=$1.fVal;$$.idVal=$1.idVal;}
+	: var_expression assignment_operator logical_or_expression 
+		{
+						    $$ = create_node("=",$1,$3,NULL);
+						    fprintf(fptr,"%p = %p %p -1\n",$$,$1,$3);
+						    printf("%p = %p %p -1",$$,$1,$3);
+					            
+		//STOPPED HERE
+		
+		/*else {
+			$$.node_ptr = create_node($$, $1.node_ptr, $2.node_ptr);
+			node* l = create_leaf("id",$1.var?	*/			
+	}	
+	;
+
+assignment_operator
+	: '=' {$$=1;}
+	| T_MUL_ASSIGN {$$='*';}
+	| T_DIV_ASSIGN {$$='/';}
+	| T_MOD_ASSIGN {$$='%';}
+	| T_ADD_ASSIGN {$$='+';}
+	| T_SUB_ASSIGN {$$='-';}
+	;
+
+expression
+	: assignment_expression
+	| logical_or_expression { $$ = $1;}
+	| expression ',' assignment_expression
+	;
+
 declaration
-	: type_specifier init_declarator_list ';' {strcpy(type,"");}
+	: type_specifier init_declarator_list ';' {$1 = create_leaf("type",$1);
+						   printf("%p type -1 -1 -1 \n",$1); 
+						   fprintf(fptr,"%p type -1 -1 -1 \n",$1); 
+						   $$ = create_node("declaration",$1,$2,NULL);
+							
+						   fprintf(fptr,"%p declaration %p %p -1",$$,$1,$2);
+						   printf("%p declaration %p %p -1",$$,$1,$2);
+						   }
 	;
 
 
 init_declarator_list
-	: init_declarator
+	: init_declarator  { $$ = $1;}
 	| init_declarator_list ',' init_declarator { $$ = create_node("list",$1,$3,NULL);
+						   fprintf(fptr,"%p list %p %p -1\n",$$,$1,$3);
+						   printf("%p list %p %p -1\n",$$,$1,$3);
+						    }
 	;
 
 init_declarator
-	: declarator {$$ = create_leaf("num",$1);
-		      printf("id %p ",$$);
+	: declarator { $$ = $1;}
+	| declarator '=' initializer {
+	}
+	| declarator '='  T_STRING_LITERAL 
+		{	
+			
 		}
+	| declarator '=' '{' list_of_strings '}'
+	
+	| declarator '='  '{' initializer_list '}' { }
+		
+	| declarator '=' '{' list_of_lists '}' { }
 	;
+	
+initializer
+	: logical_or_expression { }
+	;
+
+initializer_list
+	: initializer { }
+	| initializer_list ',' initializer { }
+	;
+
+list_of_strings
+	: T_STRING_LITERAL { }
+	| list_of_strings ',' T_STRING_LITERAL { }
+	;	
+
+list_of_lists
+	: '{' initializer_list '}' { }
+	| list_of_lists ',' '{' initializer_list '}' { }
+	;
+
+
+declarator
+	: T_IDENTIFIER {$$ = create_leaf("num",$1);
+		      	//printf("%p id -1 -1 -1\n",$$);
+			fprintf(fptr,"%p id -1 -1 -1\n",$$);}
+	;
+
+type_specifier
+	: T_CHAR
+	| T_INT
+	| T_FLOAT
+	| T_DOUBLE
+	;
+
+statement
+	: compound_statement
+	| expression_statement
+	| selection_statement
+	| iteration_statement
+	| return_statement
+	| declaration
+	| T_PRINT '(' T_STRING_LITERAL ')' ';'
+	;
+
+while_statement
+	: while_compound_statement
+	| expression_statement
+	| while_selection_statement
+	| iteration_statement
+	| jump_statement
+	| declaration
+	| T_PRINT '(' T_STRING_LITERAL ')' ';'
+	;
+
+
+compound_statement
+	: '{' '}' 
+	| '{' statement_list '}'
+	;
+
+while_statement_list
+	: while_statement
+	| while_statement_list while_statement
+	;
+
+statement_list
+	: statement
+	| statement_list statement
+	;
+
+expression_statement
+	: ';'
+	| expression ';'
+	;
+	
+while_compound_statement
+	: '{' '}'
+	| '{' while_statement_list '}'
+	;
+	
+selection_statement
+	: T_IF '(' logical_or_expression ')'  statement %prec IFX
+	| T_IF '(' logical_or_expression ')'  statement  T_ELSE statement
+	;
+
+while_selection_statement
+	: T_IF '(' logical_or_expression ')'  while_statement %prec IFX
+	| T_IF '(' logical_or_expression ')'  while_statement  T_ELSE while_statement
+	;
+
+iteration_statement
+	: T_WHILE '(' logical_or_expression ')' while_statement
+	;
+
+jump_statement
+	: T_CONTINUE ';'
+	| T_BREAK ';'
+	| T_RETURN ';'
+	| T_RETURN logical_or_expression ';'
+	;
+	
+return_statement
+	: T_RETURN ';'
+	| T_RETURN logical_or_expression ';'
+	;
+
+program
+	: external_declaration function_definition {YYACCEPT;}
+	| function_definition {YYACCEPT;}
+	;
+
+external_declaration
+	: declaration
+	| T_INCLUDE T_HEADER
+	| external_declaration T_INCLUDE T_HEADER
+
+	| T_DEFINE T_IDENTIFIER primary_expression
+	| external_declaration T_DEFINE T_IDENTIFIER primary_expression			
+	| external_declaration declaration
+	;
+
+function_definition
+	: type_specifier T_MAIN '(' ')' compound_statement
+	;
+
 
 
 /*additive_expression
